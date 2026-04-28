@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Tasks from './components/Tasks'
@@ -150,10 +150,11 @@ const App = () => {
           showArchived={showArchived}
           onToggleArchive={toggleArchiveView}
         />
-        <Routes>
+        <Switch>
           <Route
+            exact
             path='/'
-            element={
+            render={() => (
               <>
                 {!showArchived && showAddTask && <AddTask onAdd={addTask} />}
                 {filteredTasks.length > 0 ? (
@@ -169,10 +170,10 @@ const App = () => {
                   showArchived ? 'No Archived Tasks' : 'No Tasks To Show'
                 )}
               </>
-            }
+            )}
           />
-          <Route path='/about' element={<About />} />
-        </Routes>
+          <Route path='/about' component={About} />
+        </Switch>
         <Footer />
       </div>
     </Router>
