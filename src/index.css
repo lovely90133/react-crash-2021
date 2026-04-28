@@ -65,6 +65,21 @@ body {
   border-left: 5px solid green;
 }
 
+.task.archived {
+  opacity: 0.7;
+  border-left: 5px solid gray;
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+}
+
 .task h3 {
   display: flex;
   align-items: center;

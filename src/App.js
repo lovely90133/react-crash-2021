@@ -9,6 +9,7 @@ import About from './components/About'
 const App = () => {
   const [showAddTask, setShowAddTask] = useState(false)
   const [tasks, setTasks] = useState([])
+  const [showArchived, setShowArchived] = useState(false)
 
   useEffect(() => {
     const getTasks = async () => {
@@ -37,21 +38,18 @@ const App = () => {
 
   // Add Task
   const addTask = async (task) => {
+    const newTask = { ...task, archived: false }
     const res = await fetch('http://localhost:5000/tasks', {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
       },
-      body: JSON.stringify(task),
+      body: JSON.stringify(newTask),
     })
 
     const data = await res.json()
 
     setTasks([...tasks, data])
-
-    // const id = Math.floor(Math.random() * 10000) + 1
-    // const newTask = { id, ...task }
-    // setTasks([...tasks, newTask])
   }
 
   // Delete Task
@@ -87,27 +85,88 @@ const App = () => {
     )
   }
 
+  // Archive Task
+  const archiveTask = async (id) => {
+    const taskToArchive = await fetchTask(id)
+    const updTask = { ...taskToArchive, archived: true }
+
+    const res = await fetch(`http://localhost:5000/tasks/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(updTask),
+    })
+
+    const data = await res.json()
+
+    setTasks(
+      tasks.map((task) =>
+        task.id === id ? { ...task, archived: data.archived } : task
+      )
+    )
+  }
+
+  // Restore Task
+  const restoreTask = async (id) => {
+    const taskToRestore = await fetchTask(id)
+    const updTask = { ...taskToRestore, archived: false }
+
+    const res = await fetch(`http://localhost:5000/tasks/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(updTask),
+    })
+
+    const data = await res.json()
+
+    setTasks(
+      tasks.map((task) =>
+        task.id === id ? { ...task, archived: data.archived } : task
+      )
+    )
+  }
+
+  // Toggle Archive View
+  const toggleArchiveView = () => {
+    setShowArchived(!showArchived)
+  }
+
+  // Filter tasks based on archived status
+  // Tasks without archived property are considered as not archived
+  const filteredTasks = tasks.filter(task => {
+    const isArchived = task.archived === true
+    return showArchived ? isArchived : !isArchived
+  })
+
   return (
     <Router>
       <div className='container'>
         <Header
           onAdd={() => setShowAddTask(!showAddTask)}
           showAdd={showAddTask}
+          showArchived={showArchived}
+          onToggleArchive={toggleArchiveView}
         />
         <Routes>
           <Route
             path='/'
             element={
               <>
-                {showAddTask && <AddTask onAdd={addTask} />}
-                {tasks.length > 0 ? (
+                {!showArchived && showAddTask && <AddTask onAdd={addTask} />}
+                {filteredTasks.length > 0 ? (
                   <Tasks
-                    tasks={tasks}
+                    tasks={filteredTasks}
                     onDelete={deleteTask}
                     onToggle={toggleReminder}
+                    onArchive={archiveTask}
+                    onRestore={restoreTask}
+                    showArchived={showArchived}
                   />
                 ) : (
-                  'No Tasks To Show'
+                  showArchived ? 'No Archived Tasks' : 'No Tasks To Show'
                 )}
               </>
             }
