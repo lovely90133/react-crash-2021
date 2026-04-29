@@ -110,3 +110,69 @@ footer {
   margin-top: 30px;
   text-align: center;
 }
+
+.filter-sort-controls {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f8f8f8;
+  border-radius: 5px;
+  border: 1px solid #e0e0e0;
+}
+
+.filter-controls,
+.sort-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.sort-controls {
+  margin-bottom: 0;
+}
+
+.filter-controls span,
+.sort-controls span {
+  font-weight: 500;
+  margin-right: 10px;
+  color: #333;
+}
+
+.filter-btn,
+.sort-btn {
+  padding: 6px 14px;
+  margin-right: 8px;
+  margin-bottom: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover,
+.sort-btn:hover {
+  background-color: #e8e8e8;
+  border-color: #999;
+}
+
+.filter-btn.active,
+.sort-btn.active {
+  background-color: steelblue;
+  color: #fff;
+  border-color: steelblue;
+}
+
+.filter-btn.active:hover,
+.sort-btn.active:hover {
+  background-color: #4a8bc2;
+}
+
+.no-tasks {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+}

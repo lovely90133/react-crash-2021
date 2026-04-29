@@ -5,10 +5,13 @@ import Footer from './components/Footer'
 import Tasks from './components/Tasks'
 import AddTask from './components/AddTask'
 import About from './components/About'
+import { filterTasks, sortTasksByReminderTime } from './utils/dateUtils'
 
 const App = () => {
   const [showAddTask, setShowAddTask] = useState(false)
   const [tasks, setTasks] = useState([])
+  const [filter, setFilter] = useState('all')
+  const [sortBy, setSortBy] = useState('default')
 
   useEffect(() => {
     const getTasks = async () => {
@@ -87,6 +90,16 @@ const App = () => {
     )
   }
 
+  const getProcessedTasks = () => {
+    let processed = filterTasks(tasks, filter)
+    if (sortBy === 'reminder') {
+      processed = sortTasksByReminderTime(processed)
+    }
+    return processed
+  }
+
+  const processedTasks = getProcessedTasks()
+
   return (
     <Router>
       <div className='container'>
@@ -100,14 +113,56 @@ const App = () => {
             element={
               <>
                 {showAddTask && <AddTask onAdd={addTask} />}
-                {tasks.length > 0 ? (
+                <div className='filter-sort-controls'>
+                  <div className='filter-controls'>
+                    <span>筛选：</span>
+                    <button
+                      className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+                      onClick={() => setFilter('all')}
+                    >
+                      全部
+                    </button>
+                    <button
+                      className={`filter-btn ${filter === 'today' ? 'active' : ''}`}
+                      onClick={() => setFilter('today')}
+                    >
+                      今天
+                    </button>
+                    <button
+                      className={`filter-btn ${filter === 'overdue' ? 'active' : ''}`}
+                      onClick={() => setFilter('overdue')}
+                    >
+                      已过期
+                    </button>
+                  </div>
+                  <div className='sort-controls'>
+                    <span>排序：</span>
+                    <button
+                      className={`sort-btn ${sortBy === 'default' ? 'active' : ''}`}
+                      onClick={() => setSortBy('default')}
+                    >
+                      默认
+                    </button>
+                    <button
+                      className={`sort-btn ${sortBy === 'reminder' ? 'active' : ''}`}
+                      onClick={() => setSortBy('reminder')}
+                    >
+                      提醒时间
+                    </button>
+                  </div>
+                </div>
+                {processedTasks.length > 0 ? (
                   <Tasks
-                    tasks={tasks}
+                    tasks={processedTasks}
                     onDelete={deleteTask}
                     onToggle={toggleReminder}
                   />
                 ) : (
-                  'No Tasks To Show'
+                  <p className='no-tasks'>
+                    {filter === 'today' ? '今天没有任务' : 
+                     filter === 'overdue' ? '没有已过期的任务' : 
+                     'No Tasks To Show'}
+                  </p>
                 )}
               </>
             }
